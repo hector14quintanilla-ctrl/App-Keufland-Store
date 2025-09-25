@@ -1,0 +1,32 @@
+import time
+import msvcrt
+
+opcion = ""
+
+while True:
+    print("Selecciona la opcion: ")
+    start = time.time()
+
+    for i in range(60):
+        if msvcrt.kbhit():
+            opcion = input("\nOpcion: ")
+            if opcion.strip():
+                print("Opcion elegida:", opcion)
+                break
+        time.sleep(1)
+    else:
+        continuar = input("\nYa ha pasado 1 minuto. ¿Deseas seguir? (si/no): ")
+        if continuar.lower() != "si":
+            print("Volviendo a pantalla inicial...")
+            opcion = None
+            break
+        else:
+            continue
+
+    if opcion.strip():
+        break
+
+# Pedir fecha
+fecha = input("Ingrese la fecha DD/MM/AAAA: ")
+dia, mes, año = fecha.split("/")
+Fecha = (int(dia), int(mes), int(año))
