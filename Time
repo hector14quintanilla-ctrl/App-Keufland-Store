@@ -7,7 +7,7 @@ import os
 
 opcion = ""
 
-#Se configura el tinker
+#Aca se configura el tkinter
 root = tk.Tk()
 root.withdraw()
 
@@ -22,7 +22,7 @@ while True:
     hilo.start()
 
     start = time.time()
-    tiempo_max = 60 #Tiempo maximo de espera son los 60 segundos
+    tiempo_max = 60  #SE establece que el tiempo maximo de espera es 1 minuto
     mensaje_mostrado = False
 
     while True:
@@ -32,7 +32,7 @@ while True:
                 print("Opcion elegida:", opcion)
             break
 
-        #Aca se muestra el mensaje despues del minuto
+        #Aca muestra el mensaje solo si se paso el minuto
         if not mensaje_mostrado and time.time() - start >= tiempo_max:
             respuesta = messagebox.askyesno("Tiempo agotado", "Ya ha pasado 1 minuto. ¿Deseas seguir?")
             mensaje_mostrado = True
@@ -48,22 +48,16 @@ while True:
 
         time.sleep(0.1)
 
+    #Aca se guardara solo si si escribio el usuario
     if opcion:
+        ruta = os.path.abspath("registro.txt")
+        with open(ruta, "a", encoding="utf-8") as archivo:
+            archivo.write(f"Opcion: {opcion}\n")
+
+        messagebox.showinfo("Guardado", "Datos guardados en:/n{ruta}. ")
         break
+
     if opcion is None:
         break
-
-#Si se ingreso la opcion/es pedira ahora ingresar la fecha
-if opcion:
-    fecha = input("Ingrese la fecha DD/MM/AAAA: ")
-    dia, mes, año = fecha.split("/")
-    Fecha = (int(dia), int(mes), int(año))
-
-    #Aca lo que hace es que la fecha y opcion/es se guarden en (registro.txt)
-    ruta = os.path.abspath("registro.txt")
-    with open(ruta, "a", encoding="utf-8") as archivo:
-        archivo.write(f"Opcion: {opcion} | Fecha: {Fecha}\n")
-
-    messagebox.showinfo("Guardado", f"Datos guardados en:\n{ruta}")
 
 root.destroy()
