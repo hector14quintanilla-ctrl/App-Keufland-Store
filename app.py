@@ -346,3 +346,70 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = POSSystem(root)
     root.mainloop()
+
+import time
+import threading
+import queue
+import tkinter as tk
+from tkinter import messagebox
+import os
+
+#Se configura tkinter
+root = tk.Tk()
+root.withdraw()
+
+opcion = ""
+
+def leer_input(q):
+    """Lee input() sin bloquear el hilo principal"""
+    q.put(input("\nOpcion: ").strip())
+
+while True:
+    print("Selecciona la opcion: ")
+    q = queue.Queue()
+    hilo = threading.Thread(target=leer_input, args=(q,), daemon=True)
+    hilo.start()
+
+    start = time.time()
+    tiempo_max = 10  #Se establece que el tiempo maximo de espera es 1 minuto
+    mensaje_mostrado = False
+
+    while True:
+        if not q.empty():
+            opcion = q.get()
+            if opcion:
+                print("Opcion elegida:", opcion)
+            break
+
+        #Si se pasa 1 minuto el usuario sin ingresar nada le preguntara si desea seguir
+        if not mensaje_mostrado and time.time() - start >= tiempo_max:
+            respuesta = messagebox.askyesno(
+                title="Tiempo agotado",
+                message="Ya ha pasado 1 minuto. ¿Deseas seguir?"
+            )
+            mensaje_mostrado = True
+            if not respuesta:  #Si el usuario dice no vyelve a pantalla inicial
+                messagebox.showinfo("Aviso", "Volviendo a pantalla inicial...")
+                opcion = None
+            break
+
+        try:
+            root.update()
+        except tk.TclError:
+            pass
+
+        time.sleep(0.1)
+
+    #Se guarda un archivo.txt si el usuario si escribio algo
+    if opcion:
+        ruta = os.path.abspath("registro.txt")
+        with open(ruta, "a", encoding="utf-8") as archivo:
+            archivo.write(f"Opcion: {opcion}\n")
+
+        messagebox.showinfo("Guardado", "Datos guardados en:/n{ruta}.")
+        break
+
+    if opcion is None: #Este es por si eligio no
+        break
+
+root.destroy()
