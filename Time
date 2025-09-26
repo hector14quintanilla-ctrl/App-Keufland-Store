@@ -1,0 +1,69 @@
+import time
+import threading
+import queue
+import tkinter as tk
+from tkinter import messagebox
+import os
+
+opcion = ""
+
+#Se configura el tinker
+root = tk.Tk()
+root.withdraw()
+
+def leer_input(q):
+    """Lee input() sin bloquear el hilo principal"""
+    q.put(input("\nOpcion: ").strip())
+
+while True:
+    print("Selecciona la opcion: ")
+    q = queue.Queue()
+    hilo = threading.Thread(target=leer_input, args=(q,), daemon=True)
+    hilo.start()
+
+    start = time.time()
+    tiempo_max = 60 #Tiempo maximo de espera son los 60 segundos
+    mensaje_mostrado = False
+
+    while True:
+        if not q.empty():
+            opcion = q.get()
+            if opcion:
+                print("Opcion elegida:", opcion)
+            break
+
+        #Aca se muestra el mensaje despues del minuto
+        if not mensaje_mostrado and time.time() - start >= tiempo_max:
+            respuesta = messagebox.askyesno("Tiempo agotado", "Ya ha pasado 1 minuto. ¿Deseas seguir?")
+            mensaje_mostrado = True
+            if not respuesta:
+                messagebox.showinfo("Aviso", "Volviendo a pantalla inicial...")
+                opcion = None
+            break
+
+        try:
+            root.update()
+        except tk.TclError:
+            pass
+
+        time.sleep(0.1)
+
+    if opcion:
+        break
+    if opcion is None:
+        break
+
+#Si se ingreso la opcion/es pedira ahora ingresar la fecha
+if opcion:
+    fecha = input("Ingrese la fecha DD/MM/AAAA: ")
+    dia, mes, año = fecha.split("/")
+    Fecha = (int(dia), int(mes), int(año))
+
+    #Aca lo que hace es que la fecha y opcion/es se guarden en (registro.txt)
+    ruta = os.path.abspath("registro.txt")
+    with open(ruta, "a", encoding="utf-8") as archivo:
+        archivo.write(f"Opcion: {opcion} | Fecha: {Fecha}\n")
+
+    messagebox.showinfo("Guardado", f"Datos guardados en:\n{ruta}")
+
+root.destroy()
