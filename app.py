@@ -17,7 +17,8 @@ class ProductDatabase:
             "007": {"name": "Café Nescafé", "price": 45.50, "stock": 18},
             "008": {"name": "Chicles Trident", "price": 8.50, "stock": 60},
             "009": {"name": "Cerveza Corona", "price": 25.00, "stock": 35},
-            "010": {"name": "Galletas Oreo", "price": 22.00, "stock": 28}
+            "010": {"name": "Galletas Oreo", "price": 22.00, "stock": 28},
+            "011": {"name": "Red Bull", "price": 50, "stock": 30}
         }
 
     def get_product(self, code):
@@ -32,9 +33,8 @@ class POSSystem:
     def __init__(self, root):
         self.root = root
         self.root.title("Punto de Venta")
-        self.root.geometry("800x600")
+        self.root.geometry("900x600")
         self.root.configure(bg="#f0f0f0")
-
         self.db = ProductDatabase()
         self.cart = []
         self.total = 0.0
@@ -177,6 +177,10 @@ class POSSystem:
             "price": product["price"],
             "subtotal": subtotal
         })
+
+        if code == "006" or "009":
+            messagebox.showerror(
+                "Restrincción Edad", "Recuerda no venderle alcohol o tabaco a menores de 18")
 
         # Actualizar stock
         self.db.update_stock(code, quantity)
