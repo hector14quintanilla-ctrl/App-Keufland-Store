@@ -5,11 +5,11 @@ import tkinter as tk
 from tkinter import messagebox
 import os
 
-opcion = ""
-
-#Aca se configura el tkinter
+# Configurar Tkinter
 root = tk.Tk()
-root.withdraw()
+root.withdraw()  # Oculta la ventana principal
+
+opcion = ""
 
 def leer_input(q):
     """Lee input() sin bloquear el hilo principal"""
@@ -22,7 +22,7 @@ while True:
     hilo.start()
 
     start = time.time()
-    tiempo_max = 60  #SE establece que el tiempo maximo de espera es 1 minuto
+    tiempo_max = 60  # 60 segundos = 1 minuto
     mensaje_mostrado = False
 
     while True:
@@ -32,11 +32,14 @@ while True:
                 print("Opcion elegida:", opcion)
             break
 
-        #Aca muestra el mensaje solo si se paso el minuto
+        # Pasó 1 minuto sin escribir nada → preguntar
         if not mensaje_mostrado and time.time() - start >= tiempo_max:
-            respuesta = messagebox.askyesno("Tiempo agotado", "Ya ha pasado 1 minuto. ¿Deseas seguir?")
+            respuesta = messagebox.askyesno(
+                title="Tiempo agotado",
+                message="Ya ha pasado 1 minuto. ¿Deseas seguir?"
+            )
             mensaje_mostrado = True
-            if not respuesta:
+            if not respuesta:  # Usuario eligió "No"
                 messagebox.showinfo("Aviso", "Volviendo a pantalla inicial...")
                 opcion = None
             break
@@ -48,16 +51,16 @@ while True:
 
         time.sleep(0.1)
 
-    #Aca se guardara solo si si escribio el usuario
+    # Guardar SOLO si hubo opción escrita
     if opcion:
         ruta = os.path.abspath("registro.txt")
         with open(ruta, "a", encoding="utf-8") as archivo:
             archivo.write(f"Opcion: {opcion}\n")
 
-        messagebox.showinfo("Guardado", "Datos guardados en:/n{ruta}. ")
+        messagebox.showinfo("Guardado", "Datos guardados en:/n{ruta}.")
         break
 
-    if opcion is None:
+    if opcion is None:  # Se eligió "No"
         break
 
 root.destroy()
